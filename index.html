@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sidewall WorkTrace</title>
+    <style>
+        /* Estilização básica */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        *{
+            font-family: "Jersey 10", Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .input-group {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            padding: 5px 10px;
+            font-size: 1em;
+        }
+
+        .timer {
+            font-size: 2em;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        button {
+            margin: 10px 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .log {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fafafa;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&amp;display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1>WorkTrace</h1>
+        <div class="input-group">
+            <label for="usernameInput">Enter your name:</label>
+            <input type="text" id="usernameInput" placeholder="Your Name">
+        </div>
+        <div class="timer" id="timerDisplay">00:00:00</div>
+        <div class="buttons">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn" disabled>Pause</button>
+            <button id="resumeBtn" disabled>Resume</button>
+            <button id="stopBtn" disabled>Stop</button>
+            <button id="downloadBtn" disabled>Download Log</button>
+        </div>
+        <div class="log" id="logContainer">
+            <!-- Logs serão exibidos aqui -->
+        </div>
+    </div>
+
+    <script>
+        let startTime = null;
+        let elapsed = 0;
+        let timerInterval = null;
+        let isPaused = false;
+        let logEntries = [];
+
+        // Função para formatar data/hora no formato dd/mm/yy HH:MM:SS
+        function formatDate(date) {
+            const dd = String(date.getDate()).padStart(2, '0');
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const yy = String(date.getFullYear()).slice(-2);
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return dd + '/' + mm + '/' + yy + ' ' + hours + ':' + minutes + ':' + seconds;
+        }
+
+        // Atualiza o display do cronômetro
+        function updateTimerDisplay() {
+            const now = new Date();
+            let diff = elapsed;
+            if (!isPaused && startTime !== null) {
+                diff += now - startTime;
+            }
+            const totalSeconds = Math.floor(diff / 1000);
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            document.getElementById('timerDisplay').textContent = hours + ':' + minutes + ':' + seconds;
+        }
+
+        // Registra um evento no log
+        function logEvent(eventType) {
+            const now = new Date();
+            const logText = formatDate(now) + ' - ' + eventType;
+            logEntries.push(logText);
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = logText;
+            logContainer.appendChild(entry);
+        }
+
+        // Inicia o cronômetro
+        document.getElementById('startBtn').addEventListener('click', function () {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (username === "") {
+                alert("Please enter your name before starting.");
+                return;
+            }
+            startTime = new Date();
+            isPaused = false;
+            logEvent('Started');
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+            this.disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('downloadBtn').disabled = true;
+        });
+
+        // Pausa o cronômetro
+        document.getElementById('pauseBtn').addEventListener('click', function () {
+            if (!isPaused) {
+                isPaused = true;
+                elapsed += new Date() - startTime;
+                clearInterval(timerInterval);
+                logEvent('Paused');
+                this.disabled = true;
+                document.getElementById('resumeBtn').disabled = false;
+            }
+        });
+
+        // Retoma o cronômetro
+        document.getElementById('resumeBtn').addEventListener('click', function () {
+            if (isPaused) {
+                isPaused = false;
+                startTime = new Date();
+                timerInterval = setInterval(updateTimerDisplay, 1000);
+                logEvent('Resumed');
+                this.disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+            }
+        });
+
+        // Para o cronômetro
+        document.getElementById('stopBtn').addEventListener('click', function () {
+            if (!isPaused && startTime !== null) {
+                elapsed += new Date() - startTime;
+            }
+            clearInterval(timerInterval);
+            logEvent('Stopped');
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('resumeBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = false;
+            startTime = null;
+        });
+
+        // Gera e faz o download do arquivo de log com o formato especificado
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            const now = new Date();
+            // Data atual para o conteúdo e nome do arquivo
+            const fileDate = String(now.getDate()).padStart(2, '0') + '/' +
+                String(now.getMonth() + 1).padStart(2, '0') + '/' +
+                String(now.getFullYear()).slice(-2);
+            // Cálculo do tempo total trabalhado em horas (com 2 decimais)
+            const totalHours = (elapsed / 3600000).toFixed(2);
+            // Obtém o nome do usuário
+            const username = document.getElementById('usernameInput').value.trim();
+
+            // Monta o conteúdo do arquivo
+            let logContent = "";
+            logContent += "=============================================================\n";
+            logContent += "[" + fileDate + "]\n";
+            logContent += "=============================================================\n";
+            logContent += "                         - Logs -\n";
+            logContent += logEntries.join('\n') + "\n\n";
+            logContent += "          - Hours worked on this day -\n\n";
+            logContent += username + " worked " + totalHours + " hours this day.\n\n";
+            logContent += "Good job " + username + "!\n\n";
+            logContent += "==============================================================\n";
+
+            // Nome do arquivo (não pode conter '/' então substitui por '-')
+            const fileDateForName = fileDate.replace(/\//g, "-");
+            const fileName = "ActivityLog_" + fileDateForName + "_" + username + ".txt";
+
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+
+</html>
