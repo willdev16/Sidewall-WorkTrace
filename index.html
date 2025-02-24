@@ -6,39 +6,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sidewall WorkTrace</title>
     <style>
-        /* Estilização básica */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.8) 100%);
+            z-index: 999;
+            filter: none;
+            /* Garante que o efeito de bloom não seja aplicado à vignette */
         }
 
-        *{
+        /* Estilização básica */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #1D0F44;
+            background-color: #1D0F44;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            /* Garante que o conteúdo ocupe pelo menos toda a tela */
+            width: 100%;
+            box-sizing: border-box;
+            /* Evita que padding afete largura total */
+        }
+
+
+        * {
             font-family: "Jersey 10", Arial, Helvetica, sans-serif;
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: #fff;
+            background: #F44E38;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
         }
 
         h1 {
             text-align: center;
+            font-size: 6rem;
+            text-shadow: rgba(0, 0, 0, 0.5) 0px 6px 7px;
+
+
         }
 
         .input-group {
             text-align: center;
             margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .input-group input {
             padding: 5px 10px;
             font-size: 1em;
+            box-shadow: rgb(0, 0, 0) 0px 20px 30px -10px;
+            border: none;
+
+            background-color: #1D0F44;
+            color: #F44E38;
+
+        }
+
+        input::placeholder{
+            color: #F44E38;
         }
 
         .timer {
@@ -50,6 +96,7 @@
         .buttons {
             text-align: center;
             margin: 20px 0;
+
         }
 
         button {
@@ -57,15 +104,32 @@
             padding: 10px 20px;
             font-size: 1em;
             cursor: pointer;
+
+            box-shadow: rgb(0, 0, 0) 0px 20px 30px -10px;
+            background-color: #1D0F44;
+            color: #F44E38;
+            font-size: 1.5rem;
+            border-radius: 10px;
+
+            border: none;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            transition: opacity 0.3s;
         }
 
         .log {
             margin-top: 20px;
             max-height: 200px;
             overflow-y: auto;
-            border: 1px solid #ddd;
+            border: 3px solid #1D0F44;
+            border-radius: 10px;
             padding: 10px;
-            background: #fafafa;
+            background: #F44E38;
+            color: #1D0F44;
+
+            font-size: 1.6rem;
         }
 
         .log-entry {
