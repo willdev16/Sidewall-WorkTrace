@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sidewall WorkTrace</title>
-  <link rel="shortcut icon" href="./sw site logo.png" type="image/x-icon">
-  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css">
+  <link rel="shortcut icon" href="./sw site logo.png" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <div class="container">
     <h1 translate="no">WorkTrace</h1>
     <div class="input-group">
       <label for="usernameInput">Enter your name:</label>
-      <input type="text" id="usernameInput" placeholder="Your Name">
+      <input type="text" id="usernameInput" placeholder="Your Name" />
     </div>
     <div class="timer" id="timerDisplay">00:00:00</div>
     <div class="buttons">
@@ -21,6 +21,8 @@
       <button id="pauseBtn" disabled>Pause</button>
       <button id="resumeBtn" disabled>Resume</button>
       <button id="stopBtn" disabled>Stop</button>
+      <button id="resetBtn">Reset</button>
+      <!-- O botão Download Log será usado apenas internamente no Stop -->
       <button id="downloadBtn" disabled>Download Log</button>
     </div>
     <div class="log" id="logContainer"></div>
